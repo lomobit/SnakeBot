@@ -29,7 +29,6 @@ namespace SnakeBotAdvanced.Objects
                 {
                     if (i == 0 && snake.Id != data.You)
                     {
-                        _field[snake.Coords[i].X, snake.Coords[i].Y] = wallBlock;
                         if (snake.Coords[i].X - 1 >= 0)
                         {
                             _field[snake.Coords[i].X - 1, snake.Coords[i].Y] = wallBlock;
@@ -47,15 +46,8 @@ namespace SnakeBotAdvanced.Objects
                             _field[snake.Coords[i].X, snake.Coords[i].Y + 1] = wallBlock;
                         }
                     }
-                    else if (i == snake.Coords.Count - 1)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        _field[snake.Coords[i].X, snake.Coords[i].Y] = wallBlock;
-
-                    }
+                    
+                    _field[snake.Coords[i].X, snake.Coords[i].Y] = wallBlock;
                 }
             }
         }
@@ -118,6 +110,27 @@ namespace SnakeBotAdvanced.Objects
             result.Reverse();
             return result;
         }
+
+        public static string BeAlive(MyPoint myHead)
+        {
+            if (myHead.Y + 1 < heightField && _field[myHead.X, myHead.Y + 1] != wallBlock)
+            {
+                return "down";
+            }
+            else if (myHead.X + 1 < widthField && _field[myHead.X + 1, myHead.Y] != wallBlock)
+            {
+                return "right";
+            }
+            else if (myHead.Y - 1 >= 0 && _field[myHead.X, myHead.Y - 1] != wallBlock)
+            {
+                return "up";
+            }
+            else
+            {
+                return "left";
+            }
+        }
+
         public static string GetTheWay(MoveGettingInfo data)
         {
             // Заполняем поле
@@ -128,65 +141,72 @@ namespace SnakeBotAdvanced.Objects
 
             // Выбираем еду, к которой будем двигаться
             List<MyPoint> foods = data.Food.OrderBy(food => GetDistanceScore(myHead, food)).ToList();
-            MyPoint myFood = foods[0];
-
-            // Вычисляем путь к выбранной еде
-            List<Node> checkedNodes = new List<Node>();
-            PriorityQueue<Node> waitingNodes = new PriorityQueue<Node>();
-            waitingNodes.Enqueue(new Node(
-                myHead,
-                0,
-                GetDistanceScore(myHead, myFood),
-                null), 0);
-
-            Node current;
-            bool nodeNotWaiting;
-            int tempG = -1;
-            while (waitingNodes.Count > 0)
+            MyPoint myFood = null;
+            for (int i = 0; i < foods.Count; i++)
             {
-                current = waitingNodes.Dequeue();
-                checkedNodes.Add(current);
-
-                if (current.Position.Equals(myFood)) 
+                myFood = foods[i];
+                if (_field[myFood.X, myFood.Y] != wallBlock)
                 {
-                    var theWay = GetListByNodes(current);
-                    if (theWay[1].Position.X < myHead.X && theWay[1].Position.Y == myHead.Y)
-                    {
-                        return "left";
-                    }
-                    else if (theWay[1].Position.X > myHead.X && theWay[1].Position.Y == myHead.Y)
-                    {
-                        return "right";
-                    }
-                    else if (theWay[1].Position.X == myHead.X && theWay[1].Position.Y > myHead.Y)
-                    {
-                        return "down";
-                    }
-                    else
-                    {
-                        return "up";
-                    }
-                }
+                    // Вычисляем путь к выбранной еде
+                    List<Node> checkedNodes = new List<Node>();
+                    PriorityQueue<Node> waitingNodes = new PriorityQueue<Node>();
+                    waitingNodes.Enqueue(new Node(
+                        myHead,
+                        0,
+                        GetDistanceScore(myHead, myFood),
+                        null), 0);
 
-                foreach (var item in GetNeighbours(current, myFood))
-                {
-                    if (!checkedNodes.Contains(item))
+                    Node current;
+                    bool nodeNotWaiting;
+                    int tempG = -1;
+                    while (waitingNodes.Count > 0)
                     {
-                        nodeNotWaiting = !waitingNodes.Contains(item);
+                        current = waitingNodes.Dequeue();
+                        checkedNodes.Add(current);
 
-                        if (nodeNotWaiting)
+                        if (current.Position.Equals(myFood))
                         {
-                            waitingNodes.Enqueue(item, item.G + item.H);
-                        }
-                        else
-                        {
-                            tempG = waitingNodes.TryGetEqualItem(item)?.G ?? -1;
-                            if (tempG != -1)
+                            var theWay = GetListByNodes(current);
+                            if (theWay[1].Position.X < myHead.X && theWay[1].Position.Y == myHead.Y)
                             {
-                                if (tempG >= current.G)
+                                return "left";
+                            }
+                            else if (theWay[1].Position.X > myHead.X && theWay[1].Position.Y == myHead.Y)
+                            {
+                                return "right";
+                            }
+                            else if (theWay[1].Position.X == myHead.X && theWay[1].Position.Y > myHead.Y)
+                            {
+                                return "down";
+                            }
+                            else
+                            {
+                                return "up";
+                            }
+                        }
+
+                        var currentNeighbors = GetNeighbours(current, myFood);
+                        foreach (var item in currentNeighbors)
+                        {
+                            if (!checkedNodes.Contains(item))
+                            {
+                                nodeNotWaiting = !waitingNodes.Contains(item);
+
+                                if (nodeNotWaiting)
                                 {
-                                    waitingNodes.Remove(item);
                                     waitingNodes.Enqueue(item, item.G + item.H);
+                                }
+                                else
+                                {
+                                    tempG = waitingNodes.TryGetEqualItem(item)?.G ?? -1;
+                                    if (tempG != -1)
+                                    {
+                                        if (tempG >= current.G)
+                                        {
+                                            waitingNodes.Remove(item);
+                                            waitingNodes.Enqueue(item, item.G + item.H);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -194,7 +214,7 @@ namespace SnakeBotAdvanced.Objects
                 }
             }
 
-            return null;
+            return BeAlive(myHead);
         }
     }
 }

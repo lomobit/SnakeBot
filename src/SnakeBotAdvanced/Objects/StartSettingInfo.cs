@@ -9,10 +9,10 @@ namespace SnakeBotAdvanced.Objects
     public class StartSettingInfo
     {
         [JsonProperty("color")]
-        public string Color { get; set; } = "#FF0000";
+        public string Color { get; set; } = "#00CED1";
 
         [JsonProperty("secondary_color")]
-        public string SecondaryColor { get; set; } = "#00FF00";
+        public string SecondaryColor { get; set; } = "#7FFFD4";
 
         [JsonProperty("name")]
         public string Name { get; set; } = "Сообразим на троих";
