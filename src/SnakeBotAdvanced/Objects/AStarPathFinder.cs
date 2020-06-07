@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SnakeBotAdvanced.Objects
 {
-    public static class AStarPathFinder
+    public class AStarPathFinder
     {
-        static int widthField;
-        static int heightField;
+        private int widthField;
+        private int heightField;
 
-        static int[,] _field;
-        static int wallBlock = -1;
+        private int[,] _field;
+        private int wallBlock = -1;
 
-        private static void FillField(MoveGettingInfo data)
+        private void FillField(MoveGettingInfo data)
         {
             widthField = data.Width;
             heightField = data.Height;
@@ -51,9 +51,9 @@ namespace SnakeBotAdvanced.Objects
                 }
             }
         }
-        private static int GetDistanceScore(MyPoint p1, MyPoint p2)
+        private int GetDistanceScore(MyPoint p1, MyPoint p2)
             => (Math.Abs(p1.X - p2.X) * Math.Abs(p1.X - p2.X)) + (Math.Abs(p1.Y - p2.Y) * Math.Abs(p1.Y - p2.Y));
-        private static List<Node> GetNeighbours(Node current, MyPoint endPoint)
+        private List<Node> GetNeighbours(Node current, MyPoint endPoint)
         {
             List<Node> result = new List<Node>();
 
@@ -97,7 +97,7 @@ namespace SnakeBotAdvanced.Objects
 
             return result;
         }
-        private static List<Node> GetListByNodes(Node lastNode)
+        private List<Node> GetListByNodes(Node lastNode)
         {
             List<Node> result = new List<Node>() { lastNode };
 
@@ -111,7 +111,7 @@ namespace SnakeBotAdvanced.Objects
             return result;
         }
 
-        public static string BeAlive(MyPoint myHead)
+        public string BeAlive(MyPoint myHead)
         {
             if (myHead.Y + 1 < heightField && _field[myHead.X, myHead.Y + 1] != wallBlock)
             {
@@ -131,7 +131,7 @@ namespace SnakeBotAdvanced.Objects
             }
         }
 
-        public static string GetTheWay(MoveGettingInfo data)
+        public string GetTheWay(MoveGettingInfo data)
         {
             // Заполняем поле
             FillField(data);

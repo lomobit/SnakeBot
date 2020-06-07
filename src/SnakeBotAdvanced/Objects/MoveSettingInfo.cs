@@ -12,6 +12,6 @@ namespace SnakeBotAdvanced.Objects
         public string Move { get; set; }
 
         [JsonProperty("taunt")]
-        public string Taunt { get; set; } = "Why are you gay?";
+        public string Taunt { get; set; } = "Banzaiiii!!!1";
     }
 }

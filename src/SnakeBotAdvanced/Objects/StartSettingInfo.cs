@@ -18,7 +18,7 @@ namespace SnakeBotAdvanced.Objects
         public string Name { get; set; } = "Сообразим на троих";
         
         [JsonProperty("taunt")]
-        public static string Taunt = "Why are you gay?";
+        public static string Taunt = "Banzaiiii!!!1";
         
         [JsonProperty("head_type")]
         public static string HeadType = "sand-worm";

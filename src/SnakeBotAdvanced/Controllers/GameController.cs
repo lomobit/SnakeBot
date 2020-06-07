@@ -16,6 +16,8 @@ namespace SnakeBotAdvanced.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
+        private AStarPathFinder tmp;
+
         [HttpPost]
         [Route("start")]
         public StartSettingInfo Start(StartGettingInfo startInfo)
@@ -27,8 +29,8 @@ namespace SnakeBotAdvanced.Controllers
         [Route("move")]
         public MoveSettingInfo Move(MoveGettingInfo moveInfo)
         {
-            string temp = AStarPathFinder.GetTheWay(moveInfo);
-            return new MoveSettingInfo() { Move = temp };
+            tmp = new AStarPathFinder();
+            return new MoveSettingInfo() { Move = tmp.GetTheWay(moveInfo) };
         }
     }
 }
