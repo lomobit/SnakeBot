@@ -32,5 +32,12 @@ namespace SnakeBotAdvanced.Controllers
             tmp = new AStarPathFinder();
             return new MoveSettingInfo() { Move = tmp.GetTheWay(moveInfo) };
         }
+
+        [HttpGet]
+        [Route("play")]
+        public string Play()
+        {
+            return "Test was passed!";
+        }
     }
 }
